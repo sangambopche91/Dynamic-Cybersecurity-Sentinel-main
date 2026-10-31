@@ -8,3 +8,5 @@ flask
 imbalanced-learn
 plotly
 xgboost
+gunicorn
+scapy
