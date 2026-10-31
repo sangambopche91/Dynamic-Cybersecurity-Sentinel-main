@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analysis Error</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080d17;
+            color: #e6edf5;
+        }
+
+        .error-card {
+            width: 90%;
+            max-width: 650px;
+            background: #0d1726;
+            border: 1px solid #1c2b3d;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            color: #ff5c69;
+        }
+
+        .message {
+            color: #8fa3b8;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            word-break: break-word;
+        }
+
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #20d4ff;
+            color: #061018;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .back-btn:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="error-card">
+
+        <div class="icon">
+            ⚠
+        </div>
+
+        <h1>
+            Analysis Failed
+        </h1>
+
+        <div class="message">
+            {{ message }}
+        </div>
+
+        <a
+            href="/"
+            class="back-btn"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</body>
+</html>

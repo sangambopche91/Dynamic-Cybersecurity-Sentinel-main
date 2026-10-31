@@ -1,0 +1,915 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Traffic Analysis Results</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080d17;
+            color: #e6edf5;
+        }
+
+        .header {
+            background: #0a111d;
+            border-bottom: 1px solid #1c2b3d;
+            padding: 20px 30px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: #20d4ff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .page-title h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .page-title p {
+            margin: 0;
+            color: #8fa3b8;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #20d4ff;
+            border: 1px solid #26384d;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #0d1726;
+        }
+
+        /* Statistics */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #0d1726;
+            border: 1px solid #1c2b3d;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .stat-label {
+            color: #8fa3b8;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Results section */
+
+        .results-section {
+            background: #0d1726;
+            border: 1px solid #1c2b3d;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .results-header {
+            padding: 20px;
+            border-bottom: 1px solid #1c2b3d;
+        }
+
+        .results-header h2 {
+            margin: 0 0 6px;
+            font-size: 20px;
+        }
+
+        .results-header p {
+            margin: 0;
+            color: #8fa3b8;
+            font-size: 14px;
+        }
+
+        /* Filters */
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid #1c2b3d;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            background: #09121f;
+            color: #e6edf5;
+            border: 1px solid #26384d;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #20d4ff;
+        }
+
+        /* Table */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #172538;
+        }
+
+        th {
+            color: #8fa3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        td {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .anomaly-yes {
+            color: #ff5c69;
+            font-weight: 700;
+        }
+
+        .anomaly-no {
+            color: #20d4ff;
+            font-weight: 700;
+        }
+
+        .severity {
+            font-weight: 700;
+        }
+
+        .low {
+            color: #20d4ff;
+        }
+
+        .medium {
+            color: #ffb454;
+        }
+
+        .high,
+        .critical {
+            color: #ff5c69;
+        }
+
+        /* Response */
+
+        .response-cell {
+            min-width: 330px;
+            max-width: 500px;
+            white-space: normal;
+            line-height: 1.5;
+        }
+
+        .response-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .response-list li {
+            margin-bottom: 5px;
+            color: #b8c7d8;
+        }
+
+        .response-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .response-label {
+            display: inline-block;
+            margin-bottom: 6px;
+            color: #20d4ff;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .no-action {
+            color: #8fa3b8;
+        }
+
+        .empty {
+            padding: 40px;
+            text-align: center;
+            color: #8fa3b8;
+        }
+
+        /* Pagination */
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border-top: 1px solid #1c2b3d;
+        }
+
+        .page-btn {
+            background: #09121f;
+            color: #20d4ff;
+            border: 1px solid #26384d;
+            border-radius: 8px;
+            padding: 9px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #142235;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            color: #8fa3b8;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 1000px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .container {
+                padding: 18px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .response-cell {
+                min-width: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <div class="brand">
+            Dynamic Cybersecurity Sentinel
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <!-- Title -->
+
+        <div class="top-bar">
+
+            <div class="page-title">
+
+                <h1>
+                    Traffic Analysis Results
+                </h1>
+
+                <p>
+                    Security analysis of the uploaded network traffic.
+                </p>
+
+            </div>
+
+            <a
+                href="/"
+                class="back-btn"
+            >
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+
+        <!-- Statistics -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Records Analyzed
+                </div>
+
+                <div class="stat-value">
+                    {{ total_records }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Anomalies Detected
+                </div>
+
+                <div class="stat-value">
+                    {{
+                        results
+                        |selectattr("anomaly", "equalto", true)
+                        |list
+                        |length
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    High / Critical
+                </div>
+
+                <div class="stat-value">
+                    {{
+                        results
+                        |selectattr("severity", "in", ["High", "Critical"])
+                        |list
+                        |length
+                    }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Average Risk
+                </div>
+
+                <div class="stat-value">
+
+                    {% if results|length > 0 %}
+
+                        {{
+                            (
+                                results
+                                |map(attribute="risk_score")
+                                |sum
+                                / results|length
+                            )|round(1)
+                        }}
+
+                    {% else %}
+
+                        0
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Detection Results -->
+
+        <section class="results-section">
+
+            <div class="results-header">
+
+                <h2>
+                    Detection Results
+                </h2>
+
+                <p>
+                    Review detected anomalies, classifications, confidence, risk severity, and recommended response actions.
+                </p>
+
+            </div>
+
+
+            <!-- Filters -->
+
+            <div class="filters">
+
+                <select
+                    id="anomalyFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Records
+                    </option>
+
+                    <option value="anomaly">
+                        Anomalies Only
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="severityFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Severity
+                    </option>
+
+                    <option value="Low">
+                        Low
+                    </option>
+
+                    <option value="Medium">
+                        Medium
+                    </option>
+
+                    <option value="High">
+                        High
+                    </option>
+
+                    <option value="Critical">
+                        Critical
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Table -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Record
+                            </th>
+
+                            <th>
+                                Anomaly
+                            </th>
+
+                            <th>
+                                Attack Type
+                            </th>
+
+                            <th>
+                                Confidence
+                            </th>
+
+                            <th>
+                                Risk Score
+                            </th>
+
+                            <th>
+                                Severity
+                            </th>
+
+                            <th>
+                                Recommended Response
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="resultsBody">
+
+                        {% for result in results %}
+
+                        <tr
+                            class="result-row"
+                            data-anomaly="{{ 'true' if result.anomaly else 'false' }}"
+                            data-severity="{{ result.severity }}"
+                        >
+
+                            <td>
+                                #{{ result.record_number }}
+                            </td>
+
+                            <td>
+
+                                {% if result.anomaly %}
+
+                                    <span class="anomaly-yes">
+                                        YES
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="anomaly-no">
+                                        NO
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ result.attack_type }}
+                            </td>
+
+                            <td>
+                                {{ "%.2f"|format(result.confidence * 100) }}%
+                            </td>
+
+                            <td>
+                                {{ result.risk_score }}
+                            </td>
+
+                            <td class="severity {{ result.severity|lower }}">
+                                {{ result.severity }}
+                            </td>
+
+                            <td class="response-cell">
+
+                                <span class="response-label">
+                                    Defensive Actions
+                                </span>
+
+                                {% if result.recommended_response %}
+
+                                    <ul class="response-list">
+
+                                        {% for response in result.recommended_response %}
+
+                                        <li>
+                                            {{ response }}
+                                        </li>
+
+                                        {% endfor %}
+
+                                    </ul>
+
+                                {% else %}
+
+                                    <span class="no-action">
+                                        Continue normal monitoring.
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+
+                <div
+                    id="emptyMessage"
+                    class="empty"
+                    style="display: none;"
+                >
+                    No records match the selected filters.
+                </div>
+
+            </div>
+
+
+            <!-- Pagination -->
+
+            <div class="pagination">
+
+                <button
+                    id="previousBtn"
+                    class="page-btn"
+                    onclick="changePage(-1)"
+                >
+                    ← Previous
+                </button>
+
+                <span
+                    id="pageInfo"
+                    class="page-info"
+                >
+                    Page 1
+                </span>
+
+                <button
+                    id="nextBtn"
+                    class="page-btn"
+                    onclick="changePage(1)"
+                >
+                    Next →
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        const rows = Array.from(
+            document.querySelectorAll(".result-row")
+        );
+
+        const anomalyFilter =
+            document.getElementById("anomalyFilter");
+
+        const severityFilter =
+            document.getElementById("severityFilter");
+
+        const previousBtn =
+            document.getElementById("previousBtn");
+
+        const nextBtn =
+            document.getElementById("nextBtn");
+
+        const pageInfo =
+            document.getElementById("pageInfo");
+
+        const emptyMessage =
+            document.getElementById("emptyMessage");
+
+
+        const rowsPerPage = 10;
+
+        let currentPage = 1;
+
+
+        function getFilteredRows() {
+
+            const anomalyValue =
+                anomalyFilter.value;
+
+            const severityValue =
+                severityFilter.value;
+
+
+            return rows.filter(row => {
+
+                const anomaly =
+                    row.dataset.anomaly;
+
+                const severity =
+                    row.dataset.severity;
+
+
+                const anomalyMatch =
+                    anomalyValue === "all"
+                    ||
+                    (
+                        anomalyValue === "anomaly"
+                        &&
+                        anomaly === "true"
+                    );
+
+
+                const severityMatch =
+                    severityValue === "all"
+                    ||
+                    severity === severityValue;
+
+
+                return anomalyMatch && severityMatch;
+
+            });
+
+        }
+
+
+        function renderPage() {
+
+            const filteredRows =
+                getFilteredRows();
+
+
+            rows.forEach(row => {
+
+                row.style.display = "none";
+
+            });
+
+
+            const totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        filteredRows.length
+                        /
+                        rowsPerPage
+                    )
+                );
+
+
+            if (currentPage > totalPages) {
+
+                currentPage = totalPages;
+
+            }
+
+
+            const start =
+                (currentPage - 1)
+                *
+                rowsPerPage;
+
+
+            const end =
+                start + rowsPerPage;
+
+
+            const visibleRows =
+                filteredRows.slice(
+                    start,
+                    end
+                );
+
+
+            visibleRows.forEach(row => {
+
+                row.style.display = "table-row";
+
+            });
+
+
+            if (filteredRows.length === 0) {
+
+                emptyMessage.style.display =
+                    "block";
+
+            } else {
+
+                emptyMessage.style.display =
+                    "none";
+
+            }
+
+
+            pageInfo.textContent =
+                `Page ${currentPage} of ${totalPages}`;
+
+
+            previousBtn.disabled =
+                currentPage === 1;
+
+
+            nextBtn.disabled =
+                currentPage >= totalPages;
+
+        }
+
+
+        function changePage(direction) {
+
+            const filteredRows =
+                getFilteredRows();
+
+
+            const totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        filteredRows.length
+                        /
+                        rowsPerPage
+                    )
+                );
+
+
+            currentPage += direction;
+
+
+            if (currentPage < 1) {
+
+                currentPage = 1;
+
+            }
+
+
+            if (currentPage > totalPages) {
+
+                currentPage = totalPages;
+
+            }
+
+
+            renderPage();
+
+        }
+
+
+        anomalyFilter.addEventListener(
+            "change",
+            function() {
+
+                currentPage = 1;
+
+                renderPage();
+
+            }
+        );
+
+
+        severityFilter.addEventListener(
+            "change",
+            function() {
+
+                currentPage = 1;
+
+                renderPage();
+
+            }
+        );
+
+
+        renderPage();
+
+    </script>
+
+</body>
+</html>
+
